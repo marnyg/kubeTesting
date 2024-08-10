@@ -5,19 +5,27 @@
         treefmt.enable = true;
         rust.enable = true;
         convco.enable = true;
-        hello = {
+        direnv = {
           enable = true;
           justfile = ''
-            hello:
-            echo Hello World
+            reload:
+              direnv reload
+          '';
+        };
+        kubernetes = {
+          enable = true;
+          justfile = ''
+            start:
+              "${pkgs.minikube}/bin/minikube" start
             a:
-            ${pkgs.argocd}/bin/argocd app list
+              "${pkgs.argocd}/bin/argocd" app list
           '';
         };
       };
 
       devShells.default = pkgs.mkShell
         {
+          buildInputs = [ pkgs.minikube pkgs.argocd pkgs.helm pkgs.kubectl pkgs.jujutsu ];
           shellHook = config.pre-commit.installationScript;
           inputsFrom = [ config.just-flake.outputs.devShell ];
         };
